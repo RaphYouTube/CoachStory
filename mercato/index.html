@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche de Joueurs</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="data_full.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-8 text-center">Recherche de Joueurs 🔎​</h1>
+
+        <div id="user-setup" class="bg-white shadow-md rounded-md p-4 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Configuration de l'Utilisateur</h2>
+            <div class="mb-4">
+                <label for="user-club-input" class="block text-gray-700 text-sm font-bold mb-2">Choisissez votre club:</label>
+                <input type="text" id="user-club-input" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Entrez le nom du club">
+                <div id="user-club-suggestions" class="absolute z-10 bg-white border rounded shadow-md mt-1 w-full" style="display: none;"></div>
+            </div>
+            <div class="mb-4">
+                <label for="initial-budget" class="block text-gray-700 text-sm font-bold mb-2">Budget initial:</label>
+                <input type="number" id="initial-budget" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="500000">
+            </div>
+            <button id="validate-user-setup" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Valider
+            </button>
+        </div>
+
+        
+<div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
+    <input type="number" id="manual-budget-input" placeholder="Dépense (GP)"
+        class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline w-48">
+    <button id="update-budget-btn"
+        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
+        Mettre à jour le budget
+    </button>
+</div>
+    <!-- Bloc budget dédié bien visible -->
+    <div id="budget-container" class="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-8 shadow-md w-full text-center">
+        <h2 class="text-2xl font-bold mb-2">💰 Budget du Club</h2>
+        <p class="text-lg">Budget Initial : <span id="initial-budget-display">0</span> GP</p>
+        <p class="text-xl font-extrabold text-green-700 mt-2">Budget Actuel : <span id="budget-display">0</span> GP</p>
+    </div>
+    <div id="user-team" class="bg-white shadow-md rounded-md p-4 mb-8" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Votre Équipe</h2>
+            <div id="user-team-players" class="mb-4">
+                </div>
+            <div id="current-budget">
+                Budget initial: <span id="initial-budget-display"></span> GP<br>
+                Budget actuel: <span id="budget-display"></span> GP
+            </div>
+        </div>
+
+        <div id="advanced-search" class="bg-white shadow-md rounded-md p-4 mt-8">
+            <h2 class="text-xl font-semibold mb-4">Recherche Avancée</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="position-filter" class="block text-gray-700 text-sm font-bold mb-2">Position:</label>
+                    <select id="position-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Toutes</option>
+                        <option value="CF">Attaquant</option>
+                        <option value="CMF">Milieu</option>
+                        <option value="GK">Gardien</option>
+                        <option value="LWF">Ailier Gauche</option>
+                        <option value="RWF">Ailier Droit</option>
+                        <option value="CB">Défenseur Central</option>
+                        <option value="LB">Arrière Gauche</option>
+                        <option value="RB">Arrière Droit</option>
+                        <option value="AMF">Milieu Offensif</option>
+                        <option value="DMF">Milieu Défensif</option>
+                        <option value="RMF">Milieu Droit</option>
+                        <option value="LMF">Milieu Gauche</option>
+                        <option value="SS">Second Attaquant</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="nationality-filter" class="block text-gray-700 text-sm font-bold mb-2">Nationalité:</label>
+                    <input type="text" id="nationality-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nationalité">
+                </div>
+                <div>
+                    <label for="min-age-filter" class="block text-gray-700 text-sm font-bold mb-2">Âge Min:</label>
+                    <input type="number" id="min-age-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Âge Min">
+                </div>
+                <div>
+                    <label for="max-age-filter" class="block text-gray-700 text-sm font-bold mb-2">Âge Max:</label>
+                    <input type="number" id="max-age-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Âge Max">
+                </div>
+                <div>
+                    <label for="min-rating-filter" class="block text-gray-700 text-sm font-bold mb-2">Note Min:</label>
+                    <input type="number" id="min-rating-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Note Min">
+                </div>
+                <div>
+                    <label for="max-rating-filter" class="block text-gray-700 text-sm font-bold mb-2">Note Max:</label>
+                    <input type="number" id="max-rating-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Note Max">
+                </div>
+                <div>
+                    <label for="min-price-filter" class="block text-gray-700 text-sm font-bold mb-2">Prix Min:</label>
+                    <input type="number" id="min-price-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Prix Min">
+                </div>
+                <div>
+                    <label for="max-price-filter" class="block text-gray-700 text-sm font-bold mb-2">Prix Max:</label>
+                    <input type="number" id="max-price-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Prix Max">
+                </div>
+            </div>
+            <button id="apply-filters" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">Appliquer les Filtres</button>
+        </div>
+
+        <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+            </div>
+
+        <div id="offer-details" class="bg-white shadow-md rounded-md p-4 mt-8" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Détails de l'Offre de Transfert</h2>
+            <p id="offer-player-name" class="mb-2"></p>
+            <p id="offer-player-details" class="mb-4"></p>
+            <input type="number" id="offer-amount" placeholder="Montant de l'offre (GP)"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+            <input type="number" id="salary-amount" placeholder="Salaire annuel (GP)"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+            <div class="flex justify-end">
+                <button id="send-offer-btn"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Envoyer
+                    l'Offre</button>
+            </div>
+        </div>
+
+        <div id="counter-offer-details" class="bg-white shadow-md rounded-md p-4 mt-8" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Contre-Offre</h2>
+            <p>Le club vendeur a fait une contre-proposition:</p>
+            <input type="number" id="counter-offer-amount" placeholder="Montant de la contre-offre (GP)"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+            <input type="number" id="counter-salary-amount" placeholder="Salaire annuel de la contre-offre (GP)"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+
+            <div class="flex justify-end">
+                <button id="accept-counter-offer-btn"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">Accepter
+                    la Contre-Offre</button>
+                <button id="reject-counter-offer-btn"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">Refuser
+                    la Contre-Offre</button>
+            </div>
+        </div>
+
+        <div id="offer-summary" class="bg-white shadow-md rounded-md p-4 mt-8">
+            <h2 class="text-2xl font-bold mb-4">Résumé des Offres</h2>
+            <div class="flex">
+                <div class="w-1/2 pr-4">
+                    <h3 class="text-xl font-semibold mb-2">Offres Acceptées</h3>
+                    <div id="offer-summary-accepted"></div>
+                </div>
+                <div class="w-1/2 pl-4">
+                    <h3 class="text-xl font-semibold mb-2">Offres Refusées</h3>
+                    <div id="offer-summary-refused"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
