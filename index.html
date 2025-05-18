@@ -1,167 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recherche de Joueurs</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Gestion Financière My League</title>
     <link rel="stylesheet" href="style.css">
-    <script src="data_full.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<body>
+    <div class="container">
+        <h1>Gestion Financière de Mon Équipe</h1>
 
-<body class="bg-gray-100 font-sans">
+        <section id="informations-club">
+            <h2>Informations du Club</h2>
+            <label for="nom-club">Nom du Club:</label>
+            <input type="text" id="nom-club" value="">
+            <label for="budget-total-actuel">Budget Total Actuel:</label>
+            <input type="number" id="budget-total-actuel" value="0">
+            <label for="nom-stade">Nom du Stade:</label>
+            <input type="text" id="nom-stade" value="0">
+            <label for="capacite-stade">Capacité du Stade:</label>
+            <input type="number" id="capacite-stade" value="0">
+            <button id="valider-infos-club">Valider les informations du club</button>
+        </section>
 
-    <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-8 text-center">Recherche de Joueurs 🔎​</h1>
+        <section id="mois-saison">
+            <h2>Mois de la Saison</h2>
+            <label for="mois-saison-select">Mois de la Saison:</label>
+            <select id="mois-saison-select">
+                <option value="0">Non renseigné</option>
+                <option value="juillet">Juillet</option>
+                <option value="août">Août</option>
+                <option value="septembre">Septembre</option>
+                <option value="octobre">Octobre</option>
+                <option value="novembre">Novembre</option>
+                <option value="décembre">Décembre</option>
+                <option value="janvier">Janvier</option>
+                <option value="février">Février</option>
+                <option value="mars">Mars</option>
+                <option value="avril">Avril</option>
+                <option value="mai">Mai</option>
+                <option value="juin">Juin</option>
+            </select>
+            <button id="valider-mois-saison">Valider le mois</button>
+        </section>
 
-        <div id="user-setup" class="bg-white shadow-md rounded-md p-4 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Configuration de l'Utilisateur</h2>
-            <div class="mb-4">
-                <label for="user-club-input" class="block text-gray-700 text-sm font-bold mb-2">Choisissez votre club:</label>
-                <input type="text" id="user-club-input" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Entrez le nom du club">
-                <div id="user-club-suggestions" class="absolute z-10 bg-white border rounded shadow-md mt-1 w-full" style="display: none;"></div>
+        <section id="billetterie">
+            <h2>Billetterie</h2>
+            <label for="spectateurs">Nombre de spectateurs:</label>
+            <input type="number" id="spectateurs" value="0">
+            <p>Revenu de billetterie: <span id="revenu-billetterie">0</span> GP</p>
+            <button id="valider-billetterie">Valider</button>
+        </section>
+
+        <section id="merchandising">
+            <h2>Merchandising</h2>
+            <p>Revenu de merchandising: <span id="revenu-merchandising">0</span> GP</p>
+            <button id="generer-revenu-merchandising">Générer revenu</button>
+            <button id="valider-merchandising">Valider</button>
+        </section>
+
+        <section id="sponsors">
+            <h2>Sponsors</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-bloc" data-sponsor="Décathlon" id="sponsor-a-bloc">Décathlon</div>
+                <div class="sponsor-bloc" data-sponsor="Burger King" id="sponsor-b-bloc">Burger King</div>
+                <div class="sponsor-bloc" data-sponsor="Boulanger" id="sponsor-c-bloc">Boulanger</div>
+                <div class="sponsor-bloc" data-sponsor="Conforama" id="sponsor-d-bloc">Conforama</div>
             </div>
-            <div class="mb-4">
-                <label for="initial-budget" class="block text-gray-700 text-sm font-bold mb-2">Budget initial:</label>
-                <input type="number" id="initial-budget" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="500000">
-            </div>
-            <button id="validate-user-setup" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Valider
-            </button>
-        </div>
+            <p>Revenu total des sponsors: <span id="revenu-sponsors">0</span> GP</p>
+            <button id="signer-sponsors">Signer le sponsoring</button>
+        </section>
 
-        
-<div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
-    <input type="number" id="manual-budget-input" placeholder="Dépense (GP)"
-        class="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline w-48">
-    <button id="update-budget-btn"
-        class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-4 rounded shadow-md focus:outline-none focus:shadow-outline">
-        Mettre à jour le budget
-    </button>
-</div>
-    <!-- Bloc budget dédié bien visible -->
-    <div id="budget-container" class="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-8 shadow-md w-full text-center">
-        <h2 class="text-2xl font-bold mb-2">💰 Budget du Club</h2>
-        <p class="text-lg">Budget Initial : <span id="initial-budget-display">0</span> GP</p>
-        <p class="text-xl font-extrabold text-green-700 mt-2">Budget Actuel : <span id="budget-display">0</span> GP</p>
-    </div>
-    <div id="user-team" class="bg-white shadow-md rounded-md p-4 mb-8" style="display: none;">
-            <h2 class="text-xl font-semibold mb-4">Votre Équipe</h2>
-            <div id="user-team-players" class="mb-4">
-                </div>
-            <div id="current-budget">
-                Budget initial: <span id="initial-budget-display"></span> GP<br>
-                Budget actuel: <span id="budget-display"></span> GP
-            </div>
-        </div>
+        <section id="droits-tv">
+            <h2>Droits TV (Fin de saison)</h2>
+            <label for="classement-championnat">Classement en championnat:</label>
+            <select id="classement-championnat">
+                <option value="0">Non renseigné</option>
+                <option value="1-10">1ère - 10ème</option>
+                <option value="11-15">11ème - 15ème</option>
+                <option value="16+">16ème et plus</option>
+            </select>
+            <p>Revenu des droits TV: <span id="revenu-droits-tv">0</span> GP</p>
+            <button id="valider-droits-tv">Valider les droits TV</button>
+        </section>
 
-        <div id="advanced-search" class="bg-white shadow-md rounded-md p-4 mt-8">
-            <h2 class="text-xl font-semibold mb-4">Recherche Avancée</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="position-filter" class="block text-gray-700 text-sm font-bold mb-2">Position:</label>
-                    <select id="position-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Toutes</option>
-                        <option value="CF">Attaquant</option>
-                        <option value="CMF">Milieu</option>
-                        <option value="GK">Gardien</option>
-                        <option value="LWF">Ailier Gauche</option>
-                        <option value="RWF">Ailier Droit</option>
-                        <option value="CB">Défenseur Central</option>
-                        <option value="LB">Arrière Gauche</option>
-                        <option value="RB">Arrière Droit</option>
-                        <option value="AMF">Milieu Offensif</option>
-                        <option value="DMF">Milieu Défensif</option>
-                        <option value="RMF">Milieu Droit</option>
-                        <option value="LMF">Milieu Gauche</option>
-                        <option value="SS">Second Attaquant</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="nationality-filter" class="block text-gray-700 text-sm font-bold mb-2">Nationalité:</label>
-                    <input type="text" id="nationality-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nationalité">
-                </div>
-                <div>
-                    <label for="min-age-filter" class="block text-gray-700 text-sm font-bold mb-2">Âge Min:</label>
-                    <input type="number" id="min-age-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Âge Min">
-                </div>
-                <div>
-                    <label for="max-age-filter" class="block text-gray-700 text-sm font-bold mb-2">Âge Max:</label>
-                    <input type="number" id="max-age-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Âge Max">
-                </div>
-                <div>
-                    <label for="min-rating-filter" class="block text-gray-700 text-sm font-bold mb-2">Note Min:</label>
-                    <input type="number" id="min-rating-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Note Min">
-                </div>
-                <div>
-                    <label for="max-rating-filter" class="block text-gray-700 text-sm font-bold mb-2">Note Max:</label>
-                    <input type="number" id="max-rating-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Note Max">
-                </div>
-                <div>
-                    <label for="min-price-filter" class="block text-gray-700 text-sm font-bold mb-2">Prix Min:</label>
-                    <input type="number" id="min-price-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Prix Min">
-                </div>
-                <div>
-                    <label for="max-price-filter" class="block text-gray-700 text-sm font-bold mb-2">Prix Max:</label>
-                    <input type="number" id="max-price-filter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Prix Max">
-                </div>
-            </div>
-            <button id="apply-filters" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">Appliquer les Filtres</button>
-        </div>
+        <section id="salaires">
+            <h2>Salaires des Joueurs</h2>
+            <label for="salaire-total">Total des salaires des joueurs (par 4 matchs):</label>
+            <input type="number" id="salaire-total" value="0">
+            <button id="deduire-salaires">Déduire les salaires</button>
+        </section>
 
-        <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-            </div>
+        <section id="staff">
+            <h2>Staff</h2>
+            <label for="nombre-staff">Nombre de membres du staff:</label>
+            <input type="number" id="nombre-staff" value="0">
+            <p>Coût du staff (par 4 matchs): <span id="cout-staff">0</span> GP</p>
+            <button id="deduire-staff">Déduire le coût du staff</button>
+        </section>
 
-        <div id="offer-details" class="bg-white shadow-md rounded-md p-4 mt-8" style="display: none;">
-            <h2 class="text-xl font-semibold mb-4">Détails de l'Offre de Transfert</h2>
-            <p id="offer-player-name" class="mb-2"></p>
-            <p id="offer-player-details" class="mb-4"></p>
-            <input type="number" id="offer-amount" placeholder="Montant de l'offre (GP)"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
-            <input type="number" id="salary-amount" placeholder="Salaire annuel (GP)"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
-            <div class="flex justify-end">
-                <button id="send-offer-btn"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Envoyer
-                    l'Offre</button>
-            </div>
-        </div>
+        <section id="entretien">
+            <h2>Entretien du Stade</h2>
+            <p>Coût d'entretien (par 4 matchs): <span id="cout-entretien">800</span> GP</p>
+            <button id="deduire-entretien">Déduire le coût d'entretien</button>
+            <button id="valider-entretien">Valider</button>
+            <ul id="liste-entretien"></ul>
+        </section>
 
-        <div id="counter-offer-details" class="bg-white shadow-md rounded-md p-4 mt-8" style="display: none;">
-            <h2 class="text-xl font-semibold mb-4">Contre-Offre</h2>
-            <p>Le club vendeur a fait une contre-proposition:</p>
-            <input type="number" id="counter-offer-amount" placeholder="Montant de la contre-offre (GP)"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
-            <input type="number" id="counter-salary-amount" placeholder="Salaire annuel de la contre-offre (GP)"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4">
+        <section id="transferts">
+            <h2>Transferts</h2>
+            <label for="nom-joueur-transfert">Nom du joueur recruté:</label>
+            <input type="text" id="nom-joueur-transfert" value="">
+            <label for="depenses-transferts">Dépenses totales du mercato:</label>
+            <input type="number" id="depenses-transferts" value="0">
+            <button id="valider-transferts">Valider les transferts</button>
+        </section>
 
-            <div class="flex justify-end">
-                <button id="accept-counter-offer-btn"
-                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">Accepter
-                    la Contre-Offre</button>
-                <button id="reject-counter-offer-btn"
-                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">Refuser
-                    la Contre-Offre</button>
-            </div>
-        </div>
+        <section id="budget">
+            <h2>Budget Total</h2>
+            <p>Budget actuel: <span id="budget-total">0</span> GP</p>
+            <h3>Résumé des transactions</h3>
+            <ul id="resume-transactions">
+            </ul>
+        </section>
 
-        <div id="offer-summary" class="bg-white shadow-md rounded-md p-4 mt-8">
-            <h2 class="text-2xl font-bold mb-4">Résumé des Offres</h2>
-            <div class="flex">
-                <div class="w-1/2 pr-4">
-                    <h3 class="text-xl font-semibold mb-2">Offres Acceptées</h3>
-                    <div id="offer-summary-accepted"></div>
-                </div>
-                <div class="w-1/2 pl-4">
-                    <h3 class="text-xl font-semibold mb-2">Offres Refusées</h3>
-                    <div id="offer-summary-refused"></div>
-                </div>
-            </div>
+        <div class="actions">
+            <button id="sauvegarder">Sauvegarder</button>
+            <input type="file" id="charger">
+            <button id="telecharger-facture">Télécharger la facture du mois</button>
         </div>
     </div>
+
+    <div id="sponsor-popup" class="popup">
+        <div class="popup-content">
+            <h2 id="sponsor-popup-nom">Nom du sponsor</h2>
+            <p>Revenu offert: <span id="sponsor-popup-revenu">0</span> GP</p>
+            <p>Demande du sponsor: <span id="sponsor-popup-demande"></span></p>
+            <p>Conditions de renouvellement: <span id="sponsor-popup-conditions"></span></p>
+            <button id="sponsor-popup-signer">Signer le contrat</button>
+            <button id="sponsor-popup-fermer">Fermer</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
-
 </html>
